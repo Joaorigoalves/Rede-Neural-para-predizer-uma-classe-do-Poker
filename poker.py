@@ -27,14 +27,12 @@ import zipfile
 with zipfile.ZipFile("poker+hand.zip", 'r') as zip_ref:
     zip_ref.extractall("/content/")
 
-# Loading training dataset
 data = pd.read_csv('poker-hand-training-true.data', delimiter=",")
 # About the parameters
 # Header=1: column names (day, month, year, ...) are in the line 1 of this CSV file.
 # skiprows=[124,125,126,170]: this lines, which not contains valid data, are not imported. If this parameter is missing, all lines are imported.
 # usecols=list(range(0,13)): The last column, which is named Classes, is not imported. If this parameter is missing, all columns are imported.
 
-# inspecting columns and data types from "data" dataframe
 data.info()
 
 datatest = pd.read_csv('poker-hand-testing.data', delimiter=",")
@@ -47,26 +45,20 @@ print(scaler.fit(data))
 MinMaxScaler()
 data = pd.DataFrame(scaler.transform(data))
 
-# Extrair as classes (target)
 classestest = datatest.iloc[:, 10]
 datatest.drop(datatest.columns[[0]], axis=1, inplace=True)
 
-# Criar e fitar o scaler
 scalertest = MinMaxScaler()
 scalertest.fit(datatest)
 
-# Transformar os dados usando o MESMO scaler que foi fitado
 datatest = pd.DataFrame(scalertest.transform(datatest), columns=datatest.columns)
 
-# Creating the training dataset
 train_x = data
 train_y = label_binarize(classes, classes=[0,1,2,3,4,5,6,7,8,9])
 
-# Creating the testing dataset
 test_x = datatest
 test_y = label_binarize(classestest, classes=[0,1,2,3,4,5,6,7,8,9])
 
-# Verifying dataset dimensions
 print('The training dataset (inputs) dimensions are: ', train_x.shape)
 print('The training dataset (outputs) dimensions are: ', train_y.shape)
 print('The testing dataset (inputs) dimensions are: ', test_x.shape)
@@ -81,11 +73,9 @@ def build_model():
         layers.Dense(10, activation="softmax")
   ])
 
-  # Defining the optimizer
   optimizer = tf.keras.optimizers.RMSprop(
       learning_rate = 0.001)
 
-  # Mean Squared Error (MSE) is the default loss function in regression models
   model.compile(loss = 'categorical_crossentropy',
       optimizer = optimizer,
       metrics = ['categorical_crossentropy','accuracy'])
